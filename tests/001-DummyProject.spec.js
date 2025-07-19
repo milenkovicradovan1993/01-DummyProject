@@ -7,7 +7,9 @@ test('Flight', async ({ page }) => {
   // Ensure that One Way is selected
    const flightTypeSelect = page.locator('select.flight_way');
    await expect(flightTypeSelect).toHaveValue('oneway');
-
+   // Choose First class
+  
+   await page.locator('#flight_type').selectOption('First')
 
   // Click the "Flying From" input to open the dropdown
   await page.locator('div.form-floating.flight_search input[name="from"]').click();
@@ -15,8 +17,12 @@ test('Flight', async ({ page }) => {
   // Wait for dropdown to become visible
   await page.waitForSelector('.results-container-from', { timeout: 5000 });
 
+
+  // Select Berlin
   const berlinOption = page.locator('div[data-code="BER"][data-airport="Berlin Brandenburg Willy Brandt"]');
   await berlinOption.click();
+
+  // Select Istanbul
 
   const toInput = page.locator('div.form-floating.flight_search input[name="to"]');
      await toInput.click();
@@ -32,6 +38,8 @@ test('Flight', async ({ page }) => {
 
    await page.click('input[name="depart"]');  // opens Calendar
  
+
+    // Search for December 22 2025
    while (true) 
 {
       const currentswitcher = await page.locator('//*[@id="fadein"]/div[5]/div[1]/table/thead/tr[1]/th[2]').textContent()
@@ -87,12 +95,12 @@ test('Flight', async ({ page }) => {
        await expect(searchDropdown).toBeVisible();
         await searchDropdown.click();
  
-      // Step 2: Wait and locate the content inside the opened dropdown
+      // Wait and locate the content inside the opened dropdown
      const searchSummary = page.locator('.dropdown-menu.show'); // Or use a more specific class if needed
          await expect(searchSummary).toBeVisible();
       await page.waitForTimeout(2000); 
 
-      // Step 3: Assert destination, date, and passengers
+      // Assert destination, date, and passengers
         await expect(searchSummary).toContainText('BER - IST');
         await expect(searchSummary).toContainText('29-12-2025');
         await expect(searchSummary).toContainText('4 Adults');
