@@ -10,16 +10,10 @@ class FlightSearchPage  {
         this.departInput = page.locator('input[name="depart"]');
         this.passengerDropdown = page.locator('div.dropdown.dropdown-contain');
         this.adultQtyIncrease = page.locator('.dropdown-item.adult_qty .qtyInc');
-        this.adultQtyInput = page.locator(
-          'xpath=/html/body/main/section/section/div/div/div/form/div[2]/div[4]/div/div/div/div/div[1]/div/div/input'
-        );
-         this.childQtyIncrease = page.locator('.dropdown-item.child_qty .qtyInc');
-          this.childQtyInput = page.locator(
-           'xpath=/html/body/main/section/section/div/div/div/form/div[2]/div[4]/div/div/div/div/div[2]/div/div/input'
-         );
-        this.searchButton = page.locator(
-          'xpath=/html/body/main/section/section/div/div/div/form/div[2]/div[5]/button'
-        );
+        this.adultQtyInput = page.locator('.dropdown-item.adult_qty input');
+        this.childQtyIncrease = page.locator('.dropdown-item.child_qty .qtyInc');
+        this.childQtyInput = page.locator('.dropdown-item.child_qty input');
+        this.searchButton = page.locator('button#flights-search');
        }
         async goto() {
            await this.page.goto('https://phptravels.net/flights');
@@ -47,17 +41,21 @@ class FlightSearchPage  {
          }
         async pickDate(monthYear, day) {
          await this.departInput.click();
-         while (true) {
-          const currentMonthYear = await this.page
-           .locator('//*[@id="fadein"]/div[5]/div[1]/table/thead/tr[1]/th[2]')
-           .textContent();
-         if (currentMonthYear.trim() === monthYear) break;
-         await this.page
-           .locator('xpath=/html/body/div[5]/div[1]/table/thead/tr[1]/th[3]')
-           .click();
-         }
-         await this.page.click(`xpath=/html/body/div[5]/div[1]/table/tbody//td[text()="${day}"]`);
-         }
+         
+          while (true) {
+              const currentMonthYear = (await this.page
+                    .locator('#fadein .datepicker-days th.switch')
+                     .first()
+                    .textContent()).trim();
+
+              if (currentMonthYear === monthYear) break;
+
+                    await this.page.locator('#fadein .datepicker-days th.next').first().click();
+            }
+             await this.page
+                  .locator(`#fadein .datepicker-days td.day:text-is("${day}")`)
+                    .first().click();
+            }
         async setAdults(adultCount) {
          await this.passengerDropdown.click();
          while (true) {
@@ -74,7 +72,8 @@ class FlightSearchPage  {
             }
          }
         async searchFlights() {
-          await this.searchButton.click();
+           await this.searchButton.click();
+
               }
         }
 
